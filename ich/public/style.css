@@ -1,0 +1,12 @@
+:root{--fg:#f4f4f4;--mut:#888;--line:#1f1f1f;--card:#0a0a0a;--e:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}
+body{background:#000;color:var(--fg);font:15px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;letter-spacing:.02em}
+button,input,select,textarea{font:inherit;color:inherit}img{max-width:100%;display:block}
+.btn{background:#fff;color:#000;border:0;padding:14px 28px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;font-size:12px;font-weight:600;transition:transform .4s var(--e),opacity .3s}
+.btn:hover{transform:translateY(-2px)}.btn:disabled{opacity:.5}.btn.o{background:none;color:#fff;border:1px solid #444}
+input,select,textarea{width:100%;background:#000;border:1px solid #2a2a2a;padding:12px 14px;border-radius:0;outline:0;transition:border .3s}
+input:focus,select:focus,textarea:focus{border-color:#fff}label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:14px 0 6px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid #333;padding:8px 14px;cursor:pointer;background:none;transition:.3s}.chip.on{background:#fff;color:#000;border-color:#fff}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s var(--e),transform .9s var(--e)}.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}.rv{opacity:1;transform:none}}
