@@ -1,98 +1,37 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ICH — Black &amp; White Essentials</title>
-<meta name="theme-color" content="#fbfaf8">
-<script>try{if(localStorage.getItem("ich-theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap" rel="stylesheet"><link rel="stylesheet" href="/store.css">
-<script defer src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
-</head><body>
-<div class="pre" id="pre"><img src="/img/logo-mark.png" alt="ICH"></div>
-<header id="hd"><nav><a class="cap ul" href="#shop">Collection</a></nav><a href="#top" data-top><img class="lg" src="/img/logo-mark.png" alt="ICH"></a>
-<div class="rt"><a class="cap ul" href="#contact">Contact</a><button class="tg" id="tg" aria-label="Toggle dark mode"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></div></header>
-
-<section class="hero" id="top"><div class="bg" data-p><div class="bgi"></div></div>
-<div class="hc"><span class="cap rise" style="--l:.2s">The Collection</span>
-<h1><span class="ln"><span style="--l:.3s">Black &amp; white</span></span><span class="ln"><span style="--l:.45s"><em>essentials.</em></span></span></h1>
-<a class="lk cap rise" style="--l:.8s" href="#shop">Discover<i></i></a></div></section>
-
-<section class="stm"><p id="stm">Essentials, reduced to black and white.</p><span class="cap mut rv">ICH</span></section>
-
-<section class="col" id="shop"><div class="sh rv"><span class="cap">The Collection</span><span class="cap mut" id="cnt"></span></div>
-<div class="grid" id="grid"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div></section>
-
-<footer id="contact"><div class="ft">
-<div class="fcol fbr rv"><img class="fl" src="/img/logo-mark.png" alt="ICH"><p class="ftx" id="ftx" hidden></p></div>
-<div class="fcol rv" id="fc1" hidden><span class="cap mut">Contact</span></div>
-<div class="fcol rv" id="fc2" hidden><span class="cap mut">Follow</span></div>
-<div class="fcol rv"><span class="cap mut">Shop</span><a href="#shop">Collection</a></div>
-</div>
-<div class="fb"><span class="cap mut">© <span id="yr"></span> ICH</span><a class="cap ul" href="#top" data-top>Back to top</a></div></footer>
-<div class="md" id="md" data-lenis-prevent></div>
-
-<script>
-const W="Adrar,Chlef,Laghouat,Oum El Bouaghi,Batna,Béjaïa,Biskra,Béchar,Blida,Bouira,Tamanrasset,Tébessa,Tlemcen,Tiaret,Tizi Ouzou,Alger,Djelfa,Jijel,Sétif,Saïda,Skikda,Sidi Bel Abbès,Annaba,Guelma,Constantine,Médéa,Mostaganem,M'Sila,Mascara,Ouargla,Oran,El Bayadh,Illizi,Bordj Bou Arréridj,Boumerdès,El Tarf,Tindouf,Tissemsilt,El Oued,Khenchela,Souk Ahras,Tipaza,Mila,Aïn Defla,Naâma,Aïn Témouchent,Ghardaïa,Relizane,El M'Ghair,El Menia,Ouled Djellal,Bordj Badji Mokhtar,Béni Abbès,Timimoun,Touggourt,Djanet,In Salah,In Guezzam".split(","),$=s=>document.querySelector(s);
-const E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),L=s=>(s||"").split(",").map(x=>x.trim()).filter(Boolean),D=n=>Number(n).toLocaleString("fr-DZ")+" DA",clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
-let P=[],cur,sz="",co="",lenis,modal=0;
-const ok=/^[\w-]{5,30}$/,still=matchMedia("(prefers-reduced-motion:reduce)").matches;
-
-/* intro */
-const pre=$("#pre");let seen=0;try{seen=sessionStorage.getItem("ich-in")}catch(e){}
-const reveal=()=>{pre.classList.add("out");document.body.classList.add("ready");setTimeout(()=>pre.remove(),1500)};
-if(seen){pre.remove();document.body.classList.add("ready")}else{try{sessionStorage.setItem("ich-in","1")}catch(e){}const t0=performance.now(),fire=()=>setTimeout(reveal,Math.max(0,1400-(performance.now()-t0)));document.readyState==="complete"?fire():addEventListener("load",fire)}
-
-/* smooth scroll (Lenis, falls back to native) */
-addEventListener("load",()=>{if(window.Lenis&&!still){lenis=new Lenis({lerp:.085,wheelMultiplier:.9});const f=t=>{lenis.raf(t);requestAnimationFrame(f)};requestAnimationFrame(f)}});
-const goTo=y=>lenis?lenis.scrollTo(y,{duration:1.8,easing:t=>1-Math.pow(1-t,4)}):scrollTo({top:typeof y=="number"?y:y.getBoundingClientRect().top+scrollY,behavior:"smooth"});
-document.querySelectorAll('a[href^="#"]').forEach(a=>a.onclick=e=>{e.preventDefault();const t=a.hasAttribute("data-top")?0:$(a.getAttribute("href"));if(t!=null)goTo(t)});
-
-/* theme */
-$("#tg").onclick=()=>{const r=document.documentElement,d=r.dataset.theme==="dark"?"light":"dark";r.classList.add("tt");r.dataset.theme=d;try{localStorage.setItem("ich-theme",d)}catch(e){}$('meta[name=theme-color]').content=d=="dark"?"#0a0a0a":"#fbfaf8";setTimeout(()=>r.classList.remove("tt"),700)};
-
-/* scroll-driven: header, parallax, statement words */
-const sp=$("#stm");sp.innerHTML=sp.textContent.split(" ").map(w=>`<span class="w">${w}</span>`).join(" ");
-const words=[...document.querySelectorAll(".w")],par=[...document.querySelectorAll("[data-p]")],hd=$("#hd");let last=0;
-function tick(){const y=scrollY,vh=innerHeight;hd.classList.toggle("s",y>30);
-if(!modal){if(y>280&&y>last+6)hd.classList.add("hide");else if(y<last-6||y<280)hd.classList.remove("hide")}last=y;
-if(!still){par.forEach(el=>{const r=el.parentElement.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;el.style.transform=`translate3d(0,${(r.top+r.height/2-vh/2)*-.08}px,0)`});
-const r=sp.getBoundingClientRect();if(r.bottom>0&&r.top<vh){const t=clamp((vh*.85-r.top)/(vh*.5),0,1);words.forEach((w,i)=>w.style.opacity=.14+.86*clamp(t*words.length-i,0,1))}}
-requestAnimationFrame(tick)}tick();
-
-/* tracking pixels */
-function pixels(s){
-if(ok.test(s.fb_pixel)){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',s.fb_pixel);fbq('track','PageView')}
-if(ok.test(s.tiktok_pixel)){!function(w,d,t){w.TiktokAnalyticsObject=t;var q=w[t]=w[t]||[];q.methods=["page","track","identify"];q.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat([].slice.call(arguments,0)))}};for(var i=0;i<q.methods.length;i++)q.setAndDefer(q,q.methods[i]);q.load=function(e){var n=d.createElement("script");n.src="https://analytics.tiktok.com/i18n/pixel/events.js?sdkid="+e+"&lib="+t;n.async=!0;d.head.appendChild(n)};q.load(s.tiktok_pixel);q.page()}(window,document,'ttq')}}
-fetch("/api/settings").then(r=>r.json()).then(s=>{pixels(s);
-const A=(u,t)=>`<a href="${E(u)}"${/^https?:/.test(u)?' target="_blank" rel="noopener"':""}>${E(t)}</a>`,
- soc=(v,b)=>/^https?:\/\//i.test(v)?v:b+v.replace(/^@/,""),
- wa=v=>{let d=v.replace(/\D/g,"");if(d[0]==="0")d="213"+d.slice(1);return"https://wa.me/"+d},
- fill=(id,rows)=>{rows=rows.filter(Boolean);if(rows.length){$(id).insertAdjacentHTML("beforeend",rows.join(""));$(id).hidden=false}};
-fill("#fc1",[s.phone&&A("tel:"+s.phone.replace(/\s/g,""),s.phone),s.email&&A("mailto:"+s.email,s.email),s.whatsapp&&A(wa(s.whatsapp),"WhatsApp"),s.address&&`<span class="i">${E(s.address)}</span>`]);
-fill("#fc2",[s.instagram&&A(soc(s.instagram,"https://instagram.com/"),"Instagram"),s.facebook&&A(soc(s.facebook,"https://facebook.com/"),"Facebook"),s.tiktok&&A(soc(s.tiktok,"https://tiktok.com/@"),"TikTok")]);
-if(s.footer_text){$("#ftx").textContent=s.footer_text;$("#ftx").hidden=false}}).catch(()=>{});
-$("#yr").textContent=new Date().getFullYear();
-
-/* reveal on scroll */
-const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&(e.target.classList.add("in"),io.unobserve(e.target))),{threshold:.1,rootMargin:"0px 0px -6% 0px"});
-const watch=()=>document.querySelectorAll(".rv:not(.in),.card:not(.in)").forEach(x=>io.observe(x));watch();
-
-/* collection */
-fetch("/api/products").then(r=>r.json()).then(a=>{P=a;$("#cnt").textContent=a.length?"("+String(a.length).padStart(2,"0")+")":"";
-$("#grid").innerHTML=a.length?a.map((p,i)=>`<button class="card" style="--d:${i%3*140}ms" onclick="openP(${p.id})"><div class="ph">${p.images.slice(0,2).map(u=>`<img src="${u}" alt="" loading="lazy">`).join("")}<span class="vw cap">View piece</span></div><div class="mt"><span class="no cap mut">N° ${String(i+1).padStart(2,"0")}</span><h3>${E(p.name)}</h3><span class="pr cap">${D(p.price)}</span></div></button>`).join(""):'<p class="empty">New pieces arriving soon.</p>';watch()}).catch(()=>{$("#grid").innerHTML='<p class="empty">Could not load the collection. Please refresh.</p>'});
-
-/* product view + order form */
-function sw(i,el){const b=$("#big");b.style.opacity=0;setTimeout(()=>{b.src=cur.images[i];b.style.opacity=1},300);document.querySelectorAll(".th img").forEach(x=>x.classList.toggle("on",x==el))}
-function openP(id){cur=P.find(p=>p.id==id);sz=co="";const S=L(cur.sizes),C=L(cur.colors);window.fbq&&fbq("track","ViewContent",{content_name:cur.name,value:cur.price,currency:"DZD"});window.ttq&&ttq.track("ViewContent");
-$("#md").innerHTML=`<div class="pn"><div class="gl"><img class="big" id="big" src="${cur.images[0]||""}" alt="">${cur.images.length>1?`<div class="th">${cur.images.map((u,i)=>`<img src="${u}" class="${i?"":"on"}" alt="" onclick="sw(${i},this)">`).join("")}</div>`:""}</div>
-<form id="of" class="fm"><button type="button" class="x cap" onclick="closeP()">Close</button><h2>${E(cur.name)}</h2><div class="pp">${D(cur.price)}</div><p class="ds">${E(cur.description)}</p>
-${C.length?`<label class="cap">Color</label><div class="chips" data-k="c">${C.map(c=>`<button type="button" class="chip">${E(c)}</button>`).join("")}</div>`:""}
-${S.length?`<label class="cap">Size</label><div class="chips" data-k="s">${S.map(c=>`<button type="button" class="chip">${E(c)}</button>`).join("")}</div>`:""}
-<label class="cap">Full name</label><input name="full_name" required maxlength="80"><label class="cap">Phone number</label><input name="phone" type="tel" inputmode="numeric" placeholder="05 / 06 / 07 …" required pattern="0[5-7][0-9]{8}">
-<label class="cap">Wilaya</label><select name="wilaya" required><option value="">Choose…</option>${W.map((w,i)=>`<option>${String(i+1).padStart(2,"0")} - ${w}</option>`).join("")}</select><label class="cap">Comment</label><textarea name="comment" rows="2"></textarea>
-<div class="er" id="er"></div><button class="btn cap">Order now</button></form></div>`;
-document.querySelectorAll(".chips").forEach(g=>g.onclick=e=>{const b=e.target.closest(".chip");if(!b)return;g.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));b.classList.add("on");g.dataset.k=="s"?sz=b.textContent:co=b.textContent});
-$("#of").onsubmit=async e=>{e.preventDefault();const er=$("#er");if(S.length&&!sz||C.length&&!co){er.textContent="Please choose "+(C.length&&!co?"a color":"a size")+".";return}
-const btn=e.target.querySelector(".btn");btn.disabled=1;const d=Object.fromEntries(new FormData(e.target));
-const r=await fetch("/api/orders",{method:"POST",body:JSON.stringify({...d,product_id:cur.id,size:sz,color:co})}).then(r=>r.json()).catch(()=>({error:"Network error"}));
-if(r.ok){window.fbq&&fbq("track","Purchase",{content_name:cur.name,value:cur.price,currency:"DZD"});window.ttq&&ttq.track("PlaceAnOrder");$("#of").innerHTML=`<button type="button" class="x cap" onclick="closeP()">Close</button><h2>Thank you.</h2><p class="ds">Your order is received. We will call you shortly to confirm.</p>`}else{er.textContent=r.error;btn.disabled=0}};
-$("#md").scrollTop=0;requestAnimationFrame(()=>$("#md").classList.add("o"));modal=1;lenis&&lenis.stop();document.body.style.overflow="hidden"}
-function closeP(){$("#md").classList.remove("o");modal=0;lenis&&lenis.start();document.body.style.overflow=""}
-addEventListener("keydown",e=>e.key=="Escape"&&closeP());
-</script></body></html>
+<!doctype html><html data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>ICH Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="/style.css">
+<style>
+.lg{max-width:360px;margin:12vh auto;padding:0 20px}.lg img{width:200px;mix-blend-mode:screen;margin:0 auto 20px}.lg .btn{width:100%;margin-top:18px}
+.app{display:grid;grid-template-columns:200px 1fr;min-height:100vh}aside{border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh}aside img{width:120px;mix-blend-mode:screen;margin-bottom:24px}
+aside button{display:block;width:100%;text-align:left;background:none;border:0;padding:11px 12px;cursor:pointer;color:#999;transition:.3s}aside button.on,aside button:hover{color:#fff;background:#141414}
+main{padding:30px 4vw;max-width:1000px;overflow:auto}main h2{font-size:34px;margin-bottom:22px}
+.k{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px}.bx{border:1px solid var(--line);padding:18px;background:var(--card);margin-bottom:14px}.k b{font-size:30px;font-family:"Cormorant Garamond",serif;display:block}
+.r{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}.r i{display:block;height:8px;background:#fff;min-width:3px;transition:width 1s var(--e)}.r span{width:130px;color:#aaa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--mut);font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:10px 0}.row img{width:48px;height:60px;object-fit:cover}
+.imgs{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.imgs img{width:70px;height:88px;object-fit:cover;cursor:pointer}.m{color:#7fdc9a;font-size:13px;min-height:18px}
+@media(max-width:760px){.app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}aside img{display:none}aside button{width:auto}.k{grid-template-columns:1fr}.ov{overflow:auto}}
+</style></head><body><div id="v"></div><script>
+const $=s=>document.querySelector(s),E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const A=async(u,m="GET",b)=>{const r=await fetch("/api/admin/"+u,{method:m,body:b?JSON.stringify(b):undefined});const j=await r.json().catch(()=>({}));if(r.status==401&&u!="login")init();return j};
+const T={dash:"Dashboard",orders:"Orders",products:"Products",settings:"Settings"};let me,tab="dash",ed=null;
+async function init(){const r=await A("me");me=r.me;if(me)return shell();$("#v").innerHTML=`<form class="lg" id="lf"><img src="/img/logo.jpg"><label>Password</label><input name="password" type="password" required autofocus><div class="er" id="er" style="color:#ff8a8a;margin-top:10px"></div><button class="btn">Sign in</button></form>`;
+$("#lf").onsubmit=async e=>{e.preventDefault();const l=await A("login","POST",Object.fromEntries(new FormData(e.target)));l.error?$("#er").textContent=l.error:init()}}
+function shell(){$("#v").innerHTML=`<div class="app"><aside><img src="/img/logo.jpg">${Object.entries(T).map(([k,v])=>`<button data-t="${k}" class="${k==tab?"on":""}">${v}</button>`).join("")}<button id="lo" style="margin-top:20px">Sign out</button></aside><main id="mn"></main></div>`;
+document.querySelectorAll("aside [data-t]").forEach(b=>b.onclick=()=>{tab=b.dataset.t;ed=null;shell()});$("#lo").onclick=async()=>{await A("logout","POST");init()};R[tab]()}
+const R={
+async dash(){const s=await A("stats"),bars=(a,t)=>{const m=Math.max(1,...a.map(x=>x.c));return`<div class="bx"><b style="font-size:13px;color:#999;font-weight:500">${t}</b>${a.map(x=>`<div class="r"><span>${E(x.n)}</span><i style="width:${x.c/m*55}%"></i>${x.c}</div>`).join("")||"<p style=color:#666>No data yet</p>"}</div>`};
+$("#mn").innerHTML=`<h2>Dashboard</h2><div class="k"><div class="bx"><b>${s.total.c}</b>Orders</div><div class="bx"><b>${s.total.n||0}</b>New / unconfirmed</div><div class="bx"><b>${Number(s.total.r).toLocaleString("fr-DZ")}</b>Revenue (DA)</div></div>${bars(s.products,"Best-selling products")}${bars(s.wilayas,"Top wilayas")}${bars(s.days,"Orders · last 14 days")}`},
+async orders(){const o=await A("orders"),st=["new","confirmed","shipped","delivered","cancelled"];$("#mn").innerHTML=`<h2>Orders</h2><div class="ov"><table><tr><th>#<th>Customer<th>Product<th>Wilaya<th>Status</tr>${o.map(x=>`<tr><td>${x.id}<td>${E(x.full_name)}<br><a style="color:#aaa" href="tel:${E(x.phone)}">${E(x.phone)}</a>${x.comment?`<br><small style=color:#777>${E(x.comment)}</small>`:""}<td>${E(x.product_name)}<br><small style=color:#888>${E(x.color)} ${E(x.size)} · ${x.price} DA</small><td>${E(x.wilaya)}<td><select data-o="${x.id}" style="width:auto">${st.map(s=>`<option ${s==x.status?"selected":""}>${s}</option>`).join("")}</select></tr>`).join("")}</table></div>`;
+document.querySelectorAll("[data-o]").forEach(s=>s.onchange=()=>A("orders/"+s.dataset.o,"PATCH",{status:s.value}))},
+async products(){if(ed)return form();const p=await A("products");window._p=p;$("#mn").innerHTML=`<h2>Products</h2><button class="btn" id="np">+ Add product</button><div style="margin-top:20px">${p.map(x=>`<div class="row"><div style="display:flex;gap:12px;align-items:center"><img src="${x.images[0]||""}"><div>${E(x.name)}<br><small style=color:#888>${x.price} DA ${x.active?"":"· hidden"}</small></div></div><div><button class="btn o" data-e="${x.id}">Edit</button> <button class="btn o" data-d="${x.id}">Delete</button></div></div>`).join("")}</div>`;
+$("#np").onclick=()=>{ed={images:[],active:1};R.products()};document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{ed=window._p.find(x=>x.id==b.dataset.e);R.products()});document.querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{if(confirm("Delete this product?")){await A("products/"+b.dataset.d,"DELETE");R.products()}})},
+async settings(){const s=await A("settings"),f=(k,l,h="")=>`<label>${l}</label><input name="${k}" value="${E(s[k])}" placeholder="${h}">`;$("#mn").innerHTML=`<h2>Settings</h2><form id="sf" style="max-width:460px"><b>Footer text</b>${f("footer_text","Short description","Black &amp; white essentials.")}<br><br><b>Footer contact</b>${f("phone","Phone","0555 00 00 00")}${f("email","Email","contact@…")}${f("whatsapp","WhatsApp number","0555 00 00 00")}${f("address","Address","Oran, Algeria")}<br><br><b>Footer social links</b>${f("instagram","Instagram (username or link)","ich.store")}${f("facebook","Facebook (page name or link)")}${f("tiktok","TikTok (username or link)")}<br><br><b>Tracking</b>${f("fb_pixel","Facebook Pixel ID")}${f("tiktok_pixel","TikTok Pixel ID")}<br><br><button class="btn">Save</button> <span class="m" id="m"></span></form>`;
+$("#sf").onsubmit=async e=>{e.preventDefault();await A("settings","POST",Object.fromEntries(new FormData(e.target)));$("#m").textContent="Saved ✓"}}
+};
+const rs=f=>new Promise(r=>{const i=new Image;i.onload=()=>{const k=Math.min(1,800/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*k;c.height=i.height*k;c.getContext("2d").drawImage(i,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.75))};i.src=URL.createObjectURL(f)});
+function form(){const p=ed,im=()=>$("#im").innerHTML=p.images.map((u,i)=>`<img src="${u}" title="Click to remove" data-i="${i}">`).join("");
+$("#mn").innerHTML=`<h2>${p.id?"Edit":"New"} product</h2><form id="pf" style="max-width:520px"><label>Name</label><input name="name" required value="${E(p.name)}"><label>Price (DA)</label><input name="price" type="number" required value="${p.price||""}"><label>Description</label><textarea name="description" rows="5">${E(p.description)}</textarea><label>Sizes (comma separated)</label><input name="sizes" placeholder="S, M, L, XL" value="${E(p.sizes)}"><label>Colors (comma separated)</label><input name="colors" placeholder="Black, White" value="${E(p.colors)}"><label>Pictures (max 5 · first is the cover)</label><input type="file" id="fi" accept="image/*" multiple><div class="imgs" id="im"></div><label><input type="checkbox" name="active" ${p.active?"checked":""} style="width:auto"> Visible in shop</label><br><button class="btn">Save</button> <button type="button" class="btn o" id="cx">Cancel</button></form>`;im();
+$("#im").onclick=e=>{if(e.target.dataset.i){p.images.splice(e.target.dataset.i,1);im()}};$("#fi").onchange=async e=>{for(const f of e.target.files)if(p.images.length<5)p.images.push(await rs(f));im()};$("#cx").onclick=()=>{ed=null;R.products()};
+$("#pf").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));await A("products","POST",{...d,id:p.id,active:!!d.active,images:p.images});ed=null;R.products()}}
+init();</script></body></html>
