@@ -1,0 +1,14 @@
+:root{--bg:#fff;--fg:#0a0a0a;--mut:#6f6f6f;--line:#e8e8e8;--card:#f4f4f4;--ov:rgba(255,255,255,.72);--hdr:rgba(255,255,255,.8);--hl:rgba(255,255,255,.5);--btn-bg:#0a0a0a;--btn-fg:#fff;--inp:#fff;--inp-bd:#d6d6d6;--bd2:#c9c9c9;--panel:#fff;--scrim:rgba(255,255,255,.72);--err:#c0392b;--logo:invert(1);--hero-f:none;--sk1:#f1f1f1;--sk2:#e4e4e4;--e:cubic-bezier(.22,1,.36,1);color-scheme:light}
+:root[data-theme=dark]{--bg:#000;--fg:#f4f4f4;--mut:#888;--line:#1f1f1f;--card:#0a0a0a;--ov:rgba(0,0,0,.82);--hdr:rgba(0,0,0,.78);--hl:rgba(0,0,0,.55);--btn-bg:#fff;--btn-fg:#000;--inp:#000;--inp-bd:#2a2a2a;--bd2:#444;--panel:#050505;--scrim:rgba(0,0,0,.82);--err:#ff8a8a;--logo:none;--hero-f:grayscale(1) brightness(.42);--sk1:#0d0d0d;--sk2:#1a1a1a;color-scheme:dark}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth;background:var(--bg)}
+body{background:transparent;color:var(--fg);font:15px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+html.tt,html.tt *{transition:background-color .45s,color .45s,border-color .45s,filter .45s!important}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;letter-spacing:.02em}
+button,input,select,textarea{font:inherit;color:inherit}img{max-width:100%;display:block}
+.btn{background:var(--btn-bg);color:var(--btn-fg);border:0;padding:14px 28px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;font-size:12px;font-weight:600;transition:transform .4s var(--e),opacity .3s}
+.btn:hover{transform:translateY(-2px)}.btn:disabled{opacity:.5}.btn.o{background:none;color:var(--fg);border:1px solid var(--bd2)}
+input,select,textarea{width:100%;background:var(--inp);border:1px solid var(--inp-bd);padding:12px 14px;border-radius:0;outline:0;transition:border .3s}
+input:focus,select:focus,textarea:focus{border-color:var(--fg)}label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:14px 0 6px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--bd2);padding:8px 14px;cursor:pointer;background:none;transition:.3s}.chip.on{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s var(--e),transform .9s var(--e)}.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.rv,.card{opacity:1!important;transform:none!important}}
