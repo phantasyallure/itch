@@ -87,33 +87,34 @@ module.exports = async (req, res) => {
 
     if (parts[0] !== 'admin') return send({ error: 'Not found' }, 404);
 
-    // ---------- auth (single password from Vercel env var) ----------
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.SETUP_KEY || '';
+    // ---------- auth (single password from Vercel env var, stateless signed cookie) ----------
+    const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || process.env.SETUP_KEY || '').trim();
     const sha = (x) => crypto.createHash('sha256').update(String(x)).digest();
+    const sign = (exp) => crypto.createHmac('sha256', sha('ich-session:' + ADMIN_PASSWORD)).update(String(exp)).digest('hex');
+    const COOKIE = (v, age) => `ich_s=${v}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${age}`;
 
     if (p === 'admin/login' && m === 'POST') {
-      if (!ADMIN_PASSWORD) return send({ error: 'ADMIN_PASSWORD is not set in Vercel' }, 500);
+      if (!ADMIN_PASSWORD) return send({ error: 'ADMIN_PASSWORD is not set in Vercel (then redeploy)' }, 500);
       const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'x';
       const rk = `rl:${ip}`;
       const tries = await db.incr(rk);
       if (tries === 1) await db.expire(rk, 900);
       if (tries > 10) return send({ error: 'Too many attempts. Try again in 15 minutes.' }, 429);
-      if (!crypto.timingSafeEqual(sha(b.password || ''), sha(ADMIN_PASSWORD))) return send({ error: 'Wrong password' }, 401);
+      if (!crypto.timingSafeEqual(sha(String(b.password || '').trim()), sha(ADMIN_PASSWORD))) return send({ error: 'Wrong password' }, 401);
       await db.del(rk);
-      const t = rnd();
-      await db.set(`session:${t}`, 1, { ex: 604800 }); // expires by itself after 7 days
-      return send({ ok: 1 }, 200, { 'Set-Cookie': `s=${t}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=604800` });
+      const exp = Date.now() + 7 * 864e5;
+      return send({ ok: 1 }, 200, { 'Set-Cookie': COOKIE(`${exp}.${sign(exp)}`, 604800) });
     }
 
-    const ck = (req.headers.cookie || '').match(/(?:^|; )s=(\w+)/);
-    const me = ck && (await db.get(`session:${ck[1]}`)) ? { admin: true } : null;
-    if (p === 'admin/me') return send({ me });
+    let me = null;
+    if (ADMIN_PASSWORD) {
+      const ck = (req.headers.cookie || '').match(/(?:^|;\s*)ich_s=(\d+)\.([0-9a-f]{64})/);
+      if (ck && +ck[1] > Date.now() && crypto.timingSafeEqual(Buffer.from(ck[2]), Buffer.from(sign(ck[1])))) me = { admin: true };
+    }
+    if (p === 'admin/me') return send({ me, configured: !!ADMIN_PASSWORD });
     if (!me) return send({ error: 'Unauthorized' }, 401);
 
-    if (p === 'admin/logout') {
-      await db.del(`session:${ck[1]}`);
-      return send({ ok: 1 }, 200, { 'Set-Cookie': 's=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0' });
-    }
+    if (p === 'admin/logout') return send({ ok: 1 }, 200, { 'Set-Cookie': COOKIE('', 0) });
 
     // ---------- admin ----------
     if (parts[1] === 'products') {
