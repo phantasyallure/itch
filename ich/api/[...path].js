@@ -1,18 +1,11 @@
 const { Redis } = require('@upstash/redis');
 const crypto = require('crypto');
-const { promisify } = require('util');
-const pbkdf2 = promisify(crypto.pbkdf2);
 
 const PUB = ['phone', 'email', 'whatsapp', 'address', 'instagram', 'facebook', 'tiktok', 'footer_text', 'fb_pixel', 'tiktok_pixel'];
 const STATUSES = ['new', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 const MAX_PRODUCT_BYTES = 900 * 1024; // Upstash request limit is 1 MB
 
 const rnd = () => crypto.randomBytes(24).toString('hex');
-const hash = async (p, s) => (await pbkdf2(p, s, 100000, 32, 'sha256')).toString('hex');
-const safeEq = (a, b) => {
-  const x = Buffer.from(String(a)), y = Buffer.from(String(b));
-  return x.length === y.length && crypto.timingSafeEqual(x, y);
-};
 
 // Works with the Vercel/Upstash integration (KV_REST_API_*) or plain Upstash vars.
 let _db;
@@ -94,35 +87,27 @@ module.exports = async (req, res) => {
 
     if (parts[0] !== 'admin') return send({ error: 'Not found' }, 404);
 
-    // ---------- auth ----------
-    const userIds = await ids(db, 'users');
-    const n = userIds.length;
-
-    if (p === 'admin/setup' && m === 'POST') {
-      if (n || (process.env.SETUP_KEY && b.key !== process.env.SETUP_KEY) || !b.email || (b.password || '').length < 8)
-        return send({ error: 'Setup refused' }, 403);
-      const s = rnd();
-      await createUser(db, { email: b.email, name: b.name || 'Owner', salt: s, hash: await hash(b.password, s) });
-      return send({ ok: 1 });
-    }
+    // ---------- auth (single password from Vercel env var) ----------
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.SETUP_KEY || '';
+    const sha = (x) => crypto.createHash('sha256').update(String(x)).digest();
 
     if (p === 'admin/login' && m === 'POST') {
-      const uid = await db.get(`user:email:${String(b.email || '').toLowerCase()}`);
-      const u = uid ? await db.get(`user:${uid}`) : null;
-      if (!u || !safeEq(u.hash, await hash(b.password || '', u.salt))) return send({ error: 'Wrong email or password' }, 401);
+      if (!ADMIN_PASSWORD) return send({ error: 'ADMIN_PASSWORD is not set in Vercel' }, 500);
+      const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'x';
+      const rk = `rl:${ip}`;
+      const tries = await db.incr(rk);
+      if (tries === 1) await db.expire(rk, 900);
+      if (tries > 10) return send({ error: 'Too many attempts. Try again in 15 minutes.' }, 429);
+      if (!crypto.timingSafeEqual(sha(b.password || ''), sha(ADMIN_PASSWORD))) return send({ error: 'Wrong password' }, 401);
+      await db.del(rk);
       const t = rnd();
-      await db.set(`session:${t}`, u.id, { ex: 604800 }); // expires by itself after 7 days
+      await db.set(`session:${t}`, 1, { ex: 604800 }); // expires by itself after 7 days
       return send({ ok: 1 }, 200, { 'Set-Cookie': `s=${t}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=604800` });
     }
 
     const ck = (req.headers.cookie || '').match(/(?:^|; )s=(\w+)/);
-    let me = null;
-    if (ck) {
-      const uid = await db.get(`session:${ck[1]}`);
-      const u = uid ? await db.get(`user:${uid}`) : null;
-      if (u) me = { id: u.id, email: u.email, name: u.name };
-    }
-    if (p === 'admin/me') return send({ me, setup: !n });
+    const me = ck && (await db.get(`session:${ck[1]}`)) ? { admin: true } : null;
+    if (p === 'admin/me') return send({ me });
     if (!me) return send({ error: 'Unauthorized' }, 401);
 
     if (p === 'admin/logout') {
@@ -192,40 +177,9 @@ module.exports = async (req, res) => {
       return send({ ok: 1 });
     }
 
-    if (parts[1] === 'team') {
-      if (m === 'GET') {
-        const us = await getMany(db, 'user', userIds.slice().reverse());
-        return send(us.map(({ id, email, name }) => ({ id, email, name })));
-      }
-      if (m === 'DELETE') {
-        const id = +parts[2];
-        if (id !== me.id) {
-          const u = await db.get(`user:${id}`);
-          if (u) await db.del(`user:email:${u.email}`);
-          await remove(db, 'user', id);
-        }
-        return send({ ok: 1 });
-      }
-      if (!b.email || (b.password || '').length < 8) return send({ error: 'Email and 8+ char password required' }, 400);
-      const s = rnd();
-      await createUser(db, { email: b.email, name: b.name || '', salt: s, hash: await hash(b.password, s) });
-      return send({ ok: 1 });
-    }
-
     return send({ error: 'Not found' }, 404);
   } catch (e) {
     console.error(e);
-    if (e && e.code === 'EXISTS') return send({ error: 'Already exists' }, 409);
     return send({ error: 'Server error' }, 500);
   }
 };
-
-async function createUser(db, { email, name, salt, hash: h }) {
-  email = String(email).toLowerCase();
-  // NX = only set if the email is not taken yet (race-safe uniqueness)
-  const id = await db.incr('seq:user');
-  const claimed = await db.set(`user:email:${email}`, id, { nx: true });
-  if (!claimed) { const e = new Error('exists'); e.code = 'EXISTS'; throw e; }
-  await db.set(`user:${id}`, { id, email, name, salt, hash: h, created_at: new Date().toISOString() });
-  await db.zadd('users', { score: id, member: id });
-}
