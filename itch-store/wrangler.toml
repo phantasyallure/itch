@@ -16,7 +16,7 @@ WHATSAPP = "213784371031"   # your WhatsApp number, no + sign
 [[d1_databases]]
 binding = "DB"
 database_name = "itch-db"
-database_id = "PASTE-NEW-DATABASE-ID-HERE"   # from: npx wrangler d1 create itch-db
+database_id = "0be1d68f-7c5d-42e1-a38c-e6c8ec2e76de"
 
 [[r2_buckets]]
 binding = "BUCKET"
